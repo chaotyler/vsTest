@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close" scope="prototype">
+		<property name="driverClass">
+			<value>com.mysql.jdbc.Driver</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>jdbc:mysql://localhost:3306/vstest</value>
+		</property>
+		<property name="user">
+			<value>root</value>
+		</property>
+		<property name="password">
+			<value>root</value>
+		</property>
+		<property name="maxPoolSize">
+			<value>80</value>
+		</property>
+		<property name="minPoolSize">
+			<value>1</value>
+		</property>
+		<property name="initialPoolSize">
+			<value>1</value>
+		</property>
+		<property name="maxIdleTime">
+			<value>20</value>
+		</property>
+	</bean>
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" scope="prototype">
+		<property name="dataSource">
+			<ref local="dataSource" />
+		</property>
+		<property name="annotatedClasses">
+			<list>
+				<value>com.cpwr.vs.entity.User</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.jdbc.batch_size">20</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="userDao" class="com.cpwr.vs.dao.UserDao" scope="prototype">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+  
+	<bean id="userService" class="com.cpwr.vs.service.UserService" scope="prototype">
+		<property name="userDao">
+			<ref bean="userDao" />
+		</property>
+	</bean>
+
+	<bean id="userAction" class="com.cpwr.vs.action.UserAction" scope="prototype">
+		<property name="userService">
+			<ref bean="userService" />
+		</property>
+	</bean>
+
+</beans>
